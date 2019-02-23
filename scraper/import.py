@@ -56,13 +56,13 @@ for container in containers:
 
         print("item #: " + str(item_number) + "brand: " + brand + "  original price: " + str(original_price) +"  new price: " + str(new_price))
 
-        f.write(brand + "," + original_price.replace(",", "") + "," + str(new_price) + "\n")
+        f.write(brand + "," + original_price.replace(",", "") + "," + new_price.replace(",", "") + "\n")
 
         del new_price
 
     else:
         print("item #: " + str(item_number) + "brand: " + brand + "  original price: " + str(original_price))
-        f.write(brand + "," + str(original_price) + "," + str("-") + "\n")
+        f.write(brand + "," + original_price.replace(",", "") + "," + str("-") + "\n")
 
     item_number = item_number + 1
 
