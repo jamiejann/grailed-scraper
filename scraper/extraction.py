@@ -11,6 +11,7 @@ def extract_brand_name(container):
 def extract_product_id(container):
     product_id_container = container.find_all(class_="heart-follow")
     pid = product_id_container[0].get('id')
+    pid = pid[2:]
     return pid
 
 
@@ -42,13 +43,13 @@ def save_results(containers, display_amount, f):
         product_size = extract_product_size(container)
         original_price, new_price = extract_price(container)
 
+        """handling price reduction"""
         if new_price == 0:
             print("product ID: " + product_id + " item #: " + str(
                 item_number) + "brand: " + brand_name + "  original price:" + str(original_price))
 
             f.write(
-                product_id + "," + brand_name + "," + product_size + "," + original_price.replace(",", "") + "," + str(
-                    "-") + "\n")
+                product_id + "," + brand_name + "," + product_size + "," + original_price.replace(",", "") + "," + str("-") + "\n")
 
         else:
             print("product ID: " + product_id + " item #: " + str(
@@ -56,9 +57,7 @@ def save_results(containers, display_amount, f):
                 original_price) + "  new price: " + str(
                 new_price))
 
-            f.write(product_id + "," + brand_name + "," + product_size + "," + original_price.replace(",",
-                                                                                                      "") + "," + new_price.replace(
-                ",", "") + "\n")
+            f.write(product_id + "," + brand_name + "," + product_size + "," + original_price.replace(",", "") + "," + new_price.replace(",", "") + "\n")
 
         item_number = item_number + 1
         if item_number == display_amount: break
