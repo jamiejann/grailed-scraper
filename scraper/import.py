@@ -4,6 +4,7 @@ import extraction
 from bs4 import BeautifulSoup as soup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import Select
 
 # user_input = raw_input("What brand are you looking for?\n").replace(' ', '-').lower()
 # display_amount = raw_input("how many items?\n")
@@ -23,11 +24,17 @@ hdr = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.
 
 # driver code (headless)
 options = Options()
-options.add_argument("--headless")
+# options.add_argument("--headless")
 driver = webdriver.Chrome('C:/Users/jami/Desktop/master/chromedriver.exe', options=options)
 driver.get(url)
 
 # grailed needs time to populate items
+time.sleep(3)
+
+select = Select(driver.find_element_by_id('Sort'))
+# print [o.text for o in select.options]
+select.select_by_index(4)
+
 time.sleep(3)
 
 bs = soup(driver.page_source, 'html.parser')
@@ -35,7 +42,7 @@ bs = soup(driver.page_source, 'html.parser')
 # find containers
 containers = bs.find_all("div", class_="feed-item")
 
-# initialize csv file
+# initialize csv file with headers
 filename = "file.csv"
 f = open(filename, "w")
 headers = "product_id, brand, size, original_price, new_price\n"
