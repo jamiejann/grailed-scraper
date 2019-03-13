@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import Select
 # user_input = raw_input("What brand are you looking for?\n").replace(' ', '-').lower()
 # display_amount = raw_input("how many items?\n")
 user_input = "chrome-hearts"
-display_amount = 30
+display_amount = 100
 
 url = ("https://www.grailed.com/designers/" + user_input)
 
@@ -30,12 +30,27 @@ driver.get(url)
 # grailed needs time to populate items
 time.sleep(3)
 
-"""Sorting by popular"""
-select = Select(driver.find_element_by_id('Sort'))
-# print [o.text for o in select.options]
-select.select_by_index(4)
+"""Sort popular by selecting element"""
+try:
+    select = Select(driver.find_element_by_id('Sort'))
+    # print [o.text for o in select.options]
+    select.select_by_index(4)
+except:
+    print("Connection Error!")
+    exit(0)
 
 time.sleep(3)
+
+"""Unlimited Scroll for >30 Items"""
+page_length = driver.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
+match = False
+while not match:
+        last_count = page_length
+        time.sleep(3)
+        page_length = driver.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
+        if last_count == page_length:
+            match = True
+        break
 
 bs = soup(driver.page_source, 'html.parser')
 
@@ -43,11 +58,11 @@ bs = soup(driver.page_source, 'html.parser')
 containers = bs.find_all("div", class_="feed-item")
 
 # initialize csv file with headers
-filename = "file.csv"
+filename = user_input + "-data.csv"
 f = open(filename, "w")
-headers = "product_id, brand, size, original_price, new_price\n"
+headers = "product_id, brand, desc, size, original_price, new_price\n"
 f.write(headers)
 
-extraction.save_results(containers, display_amount, f)
+extraction.save_results(containers, display_amount, user_input, f)
 
 f.close()

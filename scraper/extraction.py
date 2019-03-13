@@ -1,3 +1,4 @@
+from itertools import product
 import re
 
 
@@ -21,6 +22,16 @@ def extract_product_size(container):
     return ps
 
 
+"""removes brand name from desc"""
+def extract_product_desc(container, user_input):
+    product_desc_container = container.find_all("div", class_="truncate")
+    pd = product_desc_container[0].text.strip()
+    user_input = re.sub('-', ' ', user_input)
+    for name in list(map(''.join, product(*(sorted({c.upper(), c.lower()} for c in user_input))))):
+        pd = re.sub(name, '', pd)
+    return pd
+
+
 def extract_price(container):
     original_price_container = container.find_all("h3", class_="original-price")
     op = original_price_container[0].text.strip()
@@ -34,30 +45,33 @@ def extract_price(container):
         return op, np
 
 
-def save_results(containers, display_amount, f):
+def save_results(containers, display_amount, user_input, f):
     item_number = 1
     for container in containers:
 
-        brand_name = extract_brand_name(container)
         product_id = extract_product_id(container)
+        brand_name = extract_brand_name(container)
         product_size = extract_product_size(container)
+        product_desc = extract_product_desc(container, user_input)
         original_price, new_price = extract_price(container)
 
         """handling price reduction"""
         if new_price == 0:
-            print("product ID: " + product_id + " item #: " + str(
-                item_number) + "brand: " + brand_name + "  original price:" + str(original_price))
+            # print("product ID: " + product_id + " item #: " + str(item_number) + "brand: " + brand_name + "  original price:" + str(original_price))
 
             f.write(
-                product_id + "," + brand_name + "," + product_size + "," + original_price.replace(",", "") + "," + str("-") + "\n")
+                product_id.encode("utf-8") + "," + brand_name.encode("utf-8") + "," + product_desc.encode("utf-8") + "," + product_size.encode("utf-8") + "," + original_price.replace(
+                    ",", "").encode("utf-8") + "," + str(
+                    "-") + "\n")
 
         else:
-            print("product ID: " + product_id + " item #: " + str(
-                item_number) + "brand: " + brand_name + "  original price:" + str(
-                original_price) + "  new price: " + str(
-                new_price))
+            # print("product ID: " + product_id + " item #: " + str(item_number) + "brand: " + brand_name + "  original price:" + str(original_price) + "  new price: " + str(new_price))
 
-            f.write(product_id + "," + brand_name + "," + product_size + "," + original_price.replace(",", "") + "," + new_price.replace(",", "") + "\n")
+            f.write(
+                product_id.encode("utf-8") + "," + brand_name.encode("utf-8") + "," + product_desc.encode("utf-8") + "," + product_size.encode("utf-8") + "," + original_price.replace(
+                    ",",
+                    "").encode("utf-8") + "," + new_price.replace(
+                    ",", "").encode("utf-8") + "\n")
 
         item_number = item_number + 1
         if item_number == display_amount: break
