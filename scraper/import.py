@@ -1,7 +1,7 @@
 import time
 import notification
 import extraction
-from bs4 import BeautifulSoup as soup
+from bs4 import BeautifulSoup as Soup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
@@ -23,7 +23,7 @@ hdr = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.
 
 """driver code (headless)"""
 options = Options()
-# options.add_argument("--headless")
+options.add_argument("--headless")
 driver = webdriver.Chrome('C:/Users/jami/Desktop/master/chromedriver.exe', options=options)
 driver.get(url)
 
@@ -35,34 +35,32 @@ try:
     select = Select(driver.find_element_by_id('Sort'))
     # print [o.text for o in select.options]
     select.select_by_index(4)
+    print("\nSuccessfully Extracted Webpage!\n")
 except:
-    print("Connection Error!")
+    print("Connection Error!\n")
     exit(0)
 
+print("Waiting 3 seconds for page to load\n")
 time.sleep(3)
 
-"""Unlimited Scroll for >30 Items"""
-page_length = driver.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
-match = False
-while not match:
-        last_count = page_length
-        time.sleep(3)
-        page_length = driver.execute_script("window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
-        if last_count == page_length:
-            match = True
-        break
+driver = extraction.check_unlimited_scroll(display_amount, driver)
 
-bs = soup(driver.page_source, 'html.parser')
+bs = Soup(driver.page_source, 'html.parser')
 
 # find containers
 containers = bs.find_all("div", class_="feed-item")
 
 # initialize csv file with headers
-filename = user_input + "-data.csv"
-f = open(filename, "w")
-headers = "product_id, brand, desc, size, original_price, new_price\n"
-f.write(headers)
+try:
+    filename = user_input + "-data.csv"
+    f = open(filename, "w")
+    headers = "product_id, brand, desc, size, original_price, new_price, price_change\n"
+    f.write(headers)
+except IOError:
+    print "Permission Denied (File still open?)\n"
+    exit(0)
 
+print("Saving Results...\n")
 extraction.save_results(containers, display_amount, user_input, f)
 
 f.close()
