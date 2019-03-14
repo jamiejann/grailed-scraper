@@ -1,12 +1,22 @@
 from itertools import product
+from bs4 import BeautifulSoup as Soup
 import time
 import re
 
-"""Unlimited Scroll for >30 Items"""
-
 
 def check_unlimited_scroll(display_amount, driver):
-    if display_amount >= 30:
+    item_count = 0
+    loop_count = 0
+    while item_count < display_amount:
+
+        bs = Soup(driver.page_source, 'html.parser')
+        item_count = len(bs.find_all("div", class_="feed-item"))
+
+        loop_count = loop_count + 1
+
+        print("Infinite Scroll Refresh iteration: " + str(loop_count) + " current item count: " + str(
+            item_count) + " display amount: " + str(display_amount))
+
         page_length = driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
         match = False
@@ -18,6 +28,7 @@ def check_unlimited_scroll(display_amount, driver):
             if last_count == page_length:
                 match = True
             break
+
     return driver
 
 
@@ -69,7 +80,7 @@ def extract_price(container):
 def calculate_price_reduction(old_price, new_price):
     old_price = re.sub(r'[^0-9]', '', old_price)
     new_price = re.sub(r'[^0-9]', '', new_price)
-    percentage = round(((1 - (float(new_price) / float(old_price)))*100), 2)
+    percentage = round(((1 - (float(new_price) / float(old_price))) * 100), 2)
     percentage = str(percentage) + "%"
     return percentage
 

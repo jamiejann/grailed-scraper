@@ -6,10 +6,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 
-# user_input = raw_input("What brand are you looking for?\n").replace(' ', '-').lower()
-# display_amount = raw_input("how many items?\n")
-user_input = "chrome-hearts"
-display_amount = 100
+user_input = raw_input("What brand are you looking for?\n").replace(' ', '-').lower()
+display_amount = int(raw_input("how many items?\n"))
 
 url = ("https://www.grailed.com/designers/" + user_input)
 
