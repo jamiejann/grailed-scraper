@@ -2,6 +2,7 @@
 
 Python scraper to scrape Grailed based on popular designer products.
 
+
 ### Prequisites
 
 requirements : 
@@ -17,6 +18,7 @@ pip install selenium
 
 * [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) - automated testing with Google Chrome
 #### chromedriver.exe must exist in same directory as import.py
+
 
 ### Usage
 
@@ -34,6 +36,7 @@ Example:
 
 
 The above code will result in something similar to this:
+
 
 ![result](https://i.imgur.com/LtFOGH0.png)
 
