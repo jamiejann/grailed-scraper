@@ -1,4 +1,5 @@
 import time
+import sys
 import notification
 import extraction
 from bs4 import BeautifulSoup as Soup
@@ -6,9 +7,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 
-
-user_input = raw_input("What brand are you looking for?\n").replace(' ', '-').lower()
-display_amount = int(raw_input("how many items?\n"))
+user_input = sys.argv[1].replace(' ', '-').lower()
+display_amount = int(sys.argv[2])
 
 url = ("https://www.grailed.com/designers/" + user_input)
 
@@ -22,8 +22,8 @@ hdr = {'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.
 
 """driver code (headless)"""
 options = Options()
-options.add_argument("--headless")
-driver = webdriver.Chrome('C:/Users/jami/Desktop/master/chromedriver.exe', options=options)
+#options.add_argument("--headless")
+driver = webdriver.Chrome('chromedriver.exe', options=options)
 driver.get(url)
 
 # grailed needs time to populate items
@@ -52,7 +52,7 @@ containers = bs.find_all("div", class_="feed-item")
 # initialize csv file with headers
 try:
     filename = user_input + "-data.csv"
-    f = open(filename, "w")
+    f = open("data/" + filename, "w")
     headers = "product_id, brand, desc, size, original_price, new_price, price_change\n"
     f.write(headers)
 except IOError:
