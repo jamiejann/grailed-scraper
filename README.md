@@ -15,4 +15,27 @@ pip install bs4
 pip install selenium
 ```
 
+* [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) - automated testing with Google Chrome
+#### chromedriver.exe must exist in same directory as import.py
+
 ### Usage
+
+Specify which designer to scrape and how many items to scrape.
+
+The resulting csv file will be saved in /data/
+```
+> python import.py "designer" [number of items to scrape]
+```
+
+Example:
+```
+> python import.py "common projects" 200
+```
+
+
+The above code will result in something similar to this:
+
+![result](https://i.imgur.com/LtFOGH0.png)
+
+
+ 
