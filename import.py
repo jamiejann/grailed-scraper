@@ -6,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 
+
 user_input = raw_input("What brand are you looking for?\n").replace(' ', '-').lower()
 display_amount = int(raw_input("how many items?\n"))
 
@@ -41,7 +42,7 @@ except:
 print("Waiting 3 seconds for page to load\n")
 time.sleep(3)
 
-driver = extraction.check_unlimited_scroll(display_amount, driver)
+driver, display_amount = extraction.check_unlimited_scroll(display_amount, driver)
 
 bs = Soup(driver.page_source, 'html.parser')
 
@@ -55,10 +56,12 @@ try:
     headers = "product_id, brand, desc, size, original_price, new_price, price_change\n"
     f.write(headers)
 except IOError:
-    print "Permission Denied (File still open?)\n"
+    print "\nPermission Denied (File still open?)\n"
     exit(0)
 
-print("Saving Results...\n")
+print("\nSaving Results...\n")
 extraction.save_results(containers, display_amount, user_input, f)
 
 f.close()
+
+

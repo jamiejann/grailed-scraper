@@ -7,15 +7,23 @@ import re
 def check_unlimited_scroll(display_amount, driver):
     item_count = 0
     loop_count = 0
+    check_repeated = []
     while item_count < display_amount:
 
         bs = Soup(driver.page_source, 'html.parser')
         item_count = len(bs.find_all("div", class_="feed-item"))
+        check_repeated.append(item_count)
+
+        """Not enough items to refresh"""
+        """TODO: FIX"""
+        if len(set(check_repeated)) != len(check_repeated):
+            return driver, item_count
 
         loop_count = loop_count + 1
 
-        print("Infinite Scroll Refresh iteration: " + str(loop_count) + " current item count: " + str(
-            item_count) + " display amount: " + str(display_amount))
+        print("Infinite Scroll Refresh iteration: " + str(loop_count) +
+              " current item count: " + str(item_count) +
+              " display amount: " + str(display_amount))
 
         page_length = driver.execute_script(
             "window.scrollTo(0, document.body.scrollHeight);var lenOfPage=document.body.scrollHeight;return lenOfPage;")
@@ -29,7 +37,7 @@ def check_unlimited_scroll(display_amount, driver):
                 match = True
             break
 
-    return driver
+    return driver, display_amount
 
 
 def extract_brand_name(container):
@@ -61,6 +69,7 @@ def extract_product_desc(container, user_input):
     user_input = re.sub('-', ' ', user_input)
     for name in list(map(''.join, product(*(sorted({c.upper(), c.lower()} for c in user_input))))):
         pd = re.sub(name, '', pd)
+    pd = re.sub(r'([^\s\w]|_)+', '', pd)
     return pd
 
 
@@ -100,21 +109,25 @@ def save_results(containers, display_amount, user_input, f):
             # print("product ID: " + product_id + " item #: " + str(item_number) + "brand: " + brand_name + "  original price:" + str(original_price))
 
             f.write(
-                product_id.encode("utf-8") + "," + brand_name.encode("utf-8") + "," + product_desc.encode(
-                    "utf-8") + "," + product_size.encode("utf-8") + "," + original_price.replace(
-                    ",", "").encode("utf-8") + "," + str(
-                    "-") + "," + "" + "\n")
+                product_id.encode("utf-8") + "," +
+                brand_name.encode("utf-8") + "," +
+                product_desc.encode("utf-8") + "," +
+                product_size.encode("utf-8") + "," +
+                original_price.replace(",", "").encode("utf-8") + "," +
+                str("-") + "," + "" + "\n")
 
         else:
             # print("product ID: " + product_id + " item #: " + str(item_number) + "brand: " + brand_name + "  original price:" + str(original_price) + "  new price: " + str(new_price))
             price_change = calculate_price_reduction(original_price, new_price)
 
             f.write(
-                product_id.encode("utf-8") + "," + brand_name.encode("utf-8") + "," + product_desc.encode(
-                    "utf-8") + "," + product_size.encode("utf-8") + "," + original_price.replace(
-                    ",",
-                    "").encode("utf-8") + "," + new_price.replace(
-                    ",", "").encode("utf-8") + "," + price_change + "\n")
+                product_id.encode("utf-8") + "," +
+                brand_name.encode("utf-8") + "," +
+                product_desc.encode("utf-8") + "," +
+                product_size.encode("utf-8") + "," +
+                original_price.replace(",", "").encode("utf-8") + "," +
+                new_price.replace(",", "").encode("utf-8") + "," +
+                price_change + "\n")
 
         item_number = item_number + 1
         if item_number == display_amount: break
